@@ -60,12 +60,15 @@ class CustomUserViewSet(UserViewSet):
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        if FriendsRequest.objects.filter(
-            from_user=to_user, to_user=from_user
-        ).exists():
-            FriendsRequest.objects.filter(
-                from_user=to_user, to_user=from_user
-            ).delete()
+
+        friend_request = (FriendsRequest.objects
+                          .filter(from_user=to_user, to_user=from_user)
+                          .first())
+        if friend_request is not None:
+            #friend_request.delete() # Удалит только одну запись
+            (FriendsRequest.objects
+             .filter(from_user=to_user, to_user=from_user)
+             .delete())
             from_user.friends.add(to_user)
         else:
             FriendsRequest.objects.create(from_user=from_user, to_user=to_user)
@@ -85,12 +88,14 @@ class CustomUserViewSet(UserViewSet):
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        if not FriendsRequest.objects.filter(
-            from_user=from_user, to_user=to_user
-        ).exists():
+
+        friend_request = FriendsRequest.objects.filter(
+            from_user=from_user, to_user=to_user).first()
+        if friend_request is None:
             return Response(
                 {"errors": "Такой заявки нет."}, status=HTTP_400_BAD_REQUEST
             )
+        # friend_request.delete() # Удалит только одну запись
         FriendsRequest.objects.filter(
             from_user=from_user, to_user=to_user
         ).delete()
@@ -106,9 +111,11 @@ class CustomUserViewSet(UserViewSet):
     def delete_friend(self, request, **kwargs):
         current_user = request.user
         friend = get_object_or_404(User, id=self.kwargs.get("id"))
-        if not FriendsRelationship.objects.filter(
-            current_user=current_user, friend=friend
-        ).exists():
+
+        friend_relationship = (FriendsRelationship.objects
+                               .filter(current_user=current_user,
+                                       friend=friend).first())
+        if friend_relationship is None:
             return Response(
                 {"errors": "Пользователя нет в друзьях."},
                 status=HTTP_400_BAD_REQUEST,
@@ -125,13 +132,16 @@ class CustomUserViewSet(UserViewSet):
     def delete_request(self, request, **kwargs):
         from_user = request.user
         to_user = get_object_or_404(User, id=self.kwargs.get("id"))
-        if not FriendsRequest.objects.filter(
-            from_user=from_user, to_user=to_user
-        ).exists():
+
+        friend_request = (FriendsRequest.objects
+                          .filter(from_user=from_user,
+                                  to_user=to_user).first())
+        if friend_request is None:
             return Response(
                 {"errors": "Такой заявки не существует."},
                 status=HTTP_400_BAD_REQUEST,
             )
+        # friend_request.delete() # Удалит только одну запись
         FriendsRequest.objects.filter(
             from_user=from_user, to_user=to_user
         ).delete()
