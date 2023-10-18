@@ -1,9 +1,9 @@
-# Where are my friends?
+# FLApp
 
 
 ### Link for the website:
 
-https://flap.acceleratorpracticum.ru/
+https://flap.TBA.ru/
 
 
 ### Project description:
@@ -110,7 +110,15 @@ Examples of responses:
         "last_name": ""
         }
 
-### Project authors:
+### Project authors (current team):
+
+Saripova Alsu
+https://github.com/justel-seth
+
+Lukonin Dmitry
+https://github.com/LukoninDmitryPy
+
+### Project authors (legacy team):
 
 Larkin Mikhail
 https://github.com/IhateChoosingNickNames
@@ -118,14 +126,11 @@ https://github.com/IhateChoosingNickNames
 Klyahina Maria
 https://github.com/ifyoumasha
 
-Sheremet Oksana
-https://github.com/sheremet-o
-
 Zolkov Denis
 https://github.com/ggastly
 
 Antonevich Fedor
 https://github.com/LevityLoveLight
 
-Smirnov Alexey
-https://github.com/AxelVonReems
+Saripova Alsu
+https://github.com/justel-seth
