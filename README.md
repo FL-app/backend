@@ -3,7 +3,7 @@
 
 ### Link for the website:
 
-https://flap.TBA.ru/
+TBA
 
 
 ### Project description:
@@ -110,27 +110,10 @@ Examples of responses:
         "last_name": ""
         }
 
-### Project authors (current team):
+### Project authors:
 
 Saripova Alsu
 https://github.com/justel-seth
 
 Lukonin Dmitry
 https://github.com/LukoninDmitryPy
-
-### Project authors (legacy team):
-
-Larkin Mikhail
-https://github.com/IhateChoosingNickNames
-
-Klyahina Maria
-https://github.com/ifyoumasha
-
-Zolkov Denis
-https://github.com/ggastly
-
-Antonevich Fedor
-https://github.com/LevityLoveLight
-
-Saripova Alsu
-https://github.com/justel-seth
