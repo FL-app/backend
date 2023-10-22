@@ -66,6 +66,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://91.186.197.174",
     "null",
 )
 
@@ -169,7 +170,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-DOMAIN = os.getenv("DOMAIN")
+DOMAIN = os.getenv("DOMAIN", default="flapp.ru")
 SITE_NAME = DOMAIN
 ACTIVATION_URL = os.getenv("ACTIVATION_URL")
 LOGIN_URL_ = os.getenv("LOGIN_URL_")
@@ -207,6 +208,8 @@ INTERNAL_IPS = (
 CSRF_TRUSTED_ORIGINS = (
     "http://" + DOMAIN,
     "https://" + DOMAIN,
+    "http://127.0.0.1",
+    "http://91.186.197.174",
 )
 AUTH_USER_MODEL = "users.CustomUser"
 
