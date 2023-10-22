@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     "users.apps.UsersConfig",
     "api.apps.ApiConfig",
     "places.apps.PlacesConfig",
+    "chat.apps.ChatConfig"
 )
 
 MIDDLEWARE = (
@@ -91,7 +92,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+ASGI_APPLICATION = "vackend.asgi.application"
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [{'0.0.0.0', 8080}]
+        }
+    }
+}
 
 # DATABASES = {
 #     "default": {
