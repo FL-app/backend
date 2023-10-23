@@ -121,26 +121,29 @@ Examples of responses:
 
 ### Project authors:
 
-Kisaev Vladislav - PM
+Vladislav Kisaev - PM  
 https://github.com/jacksparrowad
 
-Anikina Oksana - UI/UX
+Oksana Anikina - UI/UX  
 https://github.com/OksiAnikdsgn
 
-Zvonkaja Daria - UI/UX
+Daria Zvonkaja - UI/UX  
 https://github.com/DariaZvonkaja
 
-Borovikov Evgeniy - Frontend
+Evgeniy Borovikov - Frontend  
 https://github.com/evvlboro
 
-Voronin Vladislav - Frontend
-https://github.com/weitend
-
-Saripova Alsu - Backend
+Alsu Saripova - Backend  
 https://github.com/justel-seth
 
-Lukonin Dmitry - Backend
+Dmitry Lukonin - Backend  
 https://github.com/LukoninDmitryPy
 
-Udalov Dmitrii - QA
+Dmitrii Udalov - QA  
 https://github.com/DmitriiUdalov
+
+Sergej Bursow - QA  
+https://github.com/SergejBursow
+
+Mark Stachev - QA  
+https://github.com/MarkStachev
