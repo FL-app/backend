@@ -133,6 +133,12 @@ https://github.com/DariaZvonkaja
 Evgeniy Borovikov - Frontend  
 https://github.com/evvlboro
 
+Meerim - Frontend  
+https://github.com/W66LIW
+
+Edgar Asatryan - Frontend  
+https://github.com/Edgar200021
+
 Alsu Saripova - Backend  
 https://github.com/justel-seth
 
