@@ -92,7 +92,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
-ASGI_APPLICATION = "vackend.asgi.application"
+ASGI_APPLICATION = "backend.asgi.application"
 
 CHANNEL_LAYERS = {
     'default': {
@@ -233,3 +233,5 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+DJANGO_CHANNELS_REST_API = {}

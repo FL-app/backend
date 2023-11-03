@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Room
+from .models import Room, Message
 
 
-@admin.register(Room)
-class CustomUserAdmin(admin.ModelAdmin):
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
     """Админка для чата."""
 
     list_display = (
