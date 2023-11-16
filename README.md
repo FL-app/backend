@@ -125,8 +125,6 @@ Examples of responses:
 
 [Oksana Anikina](https://github.com/OksiAnikdsgn) - **UI/UX**  
 
-[Daria Zvonkaja](https://github.com/DariaZvonkaja) - **UI/UX**  
-
 |⭐️| Frontend |⭐️| Backend |⭐️| QA |  
 |-|-|-|-|-|-|   
 |1|[Evgeniy Borovikov](https://github.com/evvlboro)|1|[Alsu Saripova](https://github.com/justel-seth)|1| [Dmitrii Udalov](https://github.com/DmitriiUdalov)|  
