@@ -18,6 +18,7 @@ from .models import FriendsRelationship, FriendsRequest
 from .serializers import (CoordinateSerializer, CustomUserSerializer,
                           FriendSerializer, FriendsRelationshipSerializer,
                           UserpicSerializer, UserStatusSerializer)
+from .permissions import IsActiveUser
 
 
 class CustomUserViewSet(UserViewSet):
@@ -49,7 +50,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["post"],
         detail=True,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="add-friend",
     )
     def add_friend(self, request, **kwargs):
@@ -74,7 +75,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["post"],
         detail=True,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="approved",
     )
     def approve_request(self, request, **kwargs):
@@ -98,9 +99,29 @@ class CustomUserViewSet(UserViewSet):
         return Response(serializer.data, status=HTTP_201_CREATED)
 
     @action(
+        methods=["post"],
+        detail=True,
+        permission_classes=(IsAuthenticated, ),
+        url_path="delete-control"
+    )
+    def user_active_control(self, request):
+        import datetime
+
+        user = request.user
+        if user.is_active:
+            user.is_active = False
+            user.delete_time = datetime.datetime.now()
+        else:
+            user.is_active = True
+            user.delete_time = None
+        user.save()
+        return HttpResponseRedirect(redirect_to=settings.LOGIN_URL_)
+
+
+    @action(
         methods=["delete"],
         detail=True,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="delete-friend",
     )
     def delete_friend(self, request, **kwargs):
@@ -119,7 +140,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["delete"],
         detail=True,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="delete-request",
     )
     def delete_request(self, request, **kwargs):
@@ -140,7 +161,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["get"],
         detail=False,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="all-requests",
     )
     def all_requests(self, request):
@@ -153,7 +174,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["patch"],
         detail=True,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="update-coordinates",
     )
     def update_coordinates(self, request, **kwargs):
@@ -174,7 +195,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["get"],
         detail=False,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="get-friends",
     )
     def get_friends(self, request, **kwargs):
@@ -224,7 +245,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=["patch"],
         detail=True,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(IsAuthenticated, IsActiveUser),
         url_path="update-user-pic",
     )
     def update_user_pic(self, request, **kwargs):
