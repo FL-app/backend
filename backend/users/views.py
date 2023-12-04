@@ -1,28 +1,27 @@
 import requests
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
+# from django_filters.rest_framework import DjangoFilterBackend
+# from django.shortcuts import get_object_or_404, redirect
+from django.db.models import F
+from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404, redirect
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
-)
-from users.models import FriendsRelationship, FriendsRequest
-from users.serializers import (
-    CoordinateSerializer,
-    CustomUserSerializer,
-    FriendSerializer,
-)
-from social_core.pipeline.partial import partial
+# from social_core.pipeline.partial import partial
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
 
-User = get_user_model()
+from .models import CustomUser as User
+from .models import FriendsRelationship, FriendsRequest
+from .serializers import (CoordinateSerializer, CustomUserSerializer,
+                          FriendSerializer, FriendsRelationshipSerializer,
+                          UserpicSerializer, UserStatusSerializer)
 
 
 class CustomUserViewSet(UserViewSet):
@@ -33,11 +32,19 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = None
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_fields = ("tags",)
-    search_fields = ("^email",)
+    search_fields = ("^email", "^username", "^first_name", "^last_name")
 
     @action(detail=False)
     def friends(self, request):
-        friends = request.user.friends.all()
+        query_param = self.request.GET.get('friends_category')
+        if query_param:
+            friends = request.user.friends.filter(
+                friend__friend_category=query_param
+            ).annotate(friend_category=F('friend__friend_category'))
+        else:
+            friends = request.user.friends.all().annotate(
+                friend_category=F('friend__friend_category')
+            )
         serializer = FriendSerializer(
             friends, many=True, context={"request": request}
         )
@@ -192,6 +199,72 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=HTTP_204_NO_CONTENT)
         return Response(serializer.data, status=HTTP_200_OK)
 
+    @action(
+        methods=["patch"],
+        detail=True,
+        url_path="update-friends-category",
+    )
+    def update_friends_category(self, request, **kwargs):
+        current_user = request.user
+        friend = get_object_or_404(User, id=self.kwargs.get("id"))
+        friendship_bond = FriendsRelationship.objects.get(
+            current_user=current_user,
+            friend=friend
+        )
+        serializer = FriendsRelationshipSerializer(
+            friendship_bond,
+            partial=True,
+            data=self.request.data,
+            context={"request": request},
+        )
+        if not serializer.is_valid():
+            return Response(
+                {"Fail": "Передано некорректное наименование категории"},
+                status=HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        return Response(data=serializer.data, status=HTTP_201_CREATED)
+
+    @action(
+        methods=["patch"],
+        detail=True,
+        permission_classes=(IsAuthenticated,),
+        url_path="update-user-pic",
+    )
+    def update_user_pic(self, request, **kwargs):
+        user = request.user
+        serializer = UserpicSerializer(
+            user,
+            partial=True,
+            data=self.request.data,
+            context={"request": request},
+        )
+        if not serializer.is_valid():
+            return Response(
+                data=serializer.errors, status=HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        return Response(data=serializer.data, status=HTTP_201_CREATED)
+
+    @action(
+        methods=["patch"],
+        detail=True,
+        url_path="update-user-status",
+    )
+    def update_user_status(self, request, **kwargs):
+        serializer = UserStatusSerializer(
+            request.user,
+            partial=True,
+            data=self.request.data,
+            context={"request": request},
+        )
+        if not serializer.is_valid():
+            return Response(
+                data=serializer.errors, status=HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        return Response(data=serializer.data, status=HTTP_201_CREATED)
+
 
 class ActivateUserView(GenericAPIView):
     """Подтверждение мейла."""
@@ -201,32 +274,32 @@ class ActivateUserView(GenericAPIView):
     def get(self, request, uid, token, format=None):
         """Отправка POST вместо GET."""
         payload = {"uid": uid, "token": token}
-        actiavtion_url = "http://localhost:8000/api/v1/users/activation/"
+        actiavtion_url = settings.ACTIVATION_URL
         response = requests.post(actiavtion_url, data=payload)
         if response.status_code == 204:
-            return Response({}, response.status_code)
+            return HttpResponseRedirect(redirect_to=settings.LOGIN_URL_)
         return Response(response.json())
 
 
 
 # partial says "we may interrupt, but we will come back here again"
-@partial
-def collect_password(strategy, backend, request, details, *args, **kwargs):
-    # session 'local_password' is set by the pipeline infrastructure
-    # because it exists in FIELDS_STORED_IN_SESSION
-    local_password = strategy.session_get('local_password', None)
-    if not local_password:
-        # if we return something besides a dict or None, then that is
-        # returned to the user -- in this case we will redirect to a
-        # view that can be used to get a password
-        return redirect("views.collect_password")
-
-    # grab the user object from the database (remember that they may
-    # not be logged in yet) and set their password.  (Assumes that the
-    # email address was captured in an earlier step.)
-    user = get_object_or_404(User, email=kwargs['email'])
-    user.set_password(local_password)
-    user.save() 
-
-    # continue the pipeline
-    return
+# @partial
+# def collect_password(strategy, backend, request, details, *args, **kwargs):
+#     # session 'local_password' is set by the pipeline infrastructure
+#     # because it exists in FIELDS_STORED_IN_SESSION
+#     local_password = strategy.session_get('local_password', None)
+#     if not local_password:
+#         # if we return something besides a dict or None, then that is
+#         # returned to the user -- in this case we will redirect to a
+#         # view that can be used to get a password
+#         return redirect("views.collect_password")
+#
+#     # grab the user object from the database (remember that they may
+#     # not be logged in yet) and set their password.  (Assumes that the
+#     # email address was captured in an earlier step.)
+#     user = get_object_or_404(User, email=kwargs['email'])
+#     user.set_password(local_password)
+#     user.save()
+#
+#     # continue the pipeline
+#     return

@@ -1,10 +1,12 @@
 from django.urls import include, path, re_path
-from rest_framework.routers import DefaultRouter
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
+
 from api.views import TagViewSet
-from users.views import CustomUserViewSet, ActivateUserView
+from users.views import ActivateUserView, CustomUserViewSet
+from places.views import PlacesViewSet
 
 app_name = "api"
 
@@ -26,6 +28,7 @@ schema_view = get_schema_view(
 router = DefaultRouter()
 router.register("tags", TagViewSet)
 router.register("users", CustomUserViewSet)
+router.register("users/(?P<user_id>[1-9][0-9]*)/places", PlacesViewSet)
 
 urlpatterns = [
     path("v1/", include(router.urls)),
