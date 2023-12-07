@@ -4,6 +4,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
+
 from api.views import TagViewSet
 from users.views import ActivateUserView, CustomUserViewSet
 from places.views import PlacesViewSet
@@ -34,7 +35,8 @@ urlpatterns = [
     path("v1/", include(router.urls)),
     path("v1/", include("djoser.urls")),
     path("v1/", include("djoser.urls.jwt")),
-    path("v1/", include("djoser.social.urls")),
+    # path("v1/", include("djoser.social.urls")),
+    # path("social/", include("social_django.urls", namespace="social")),
     path("account-activate/<uid>/<token>/", ActivateUserView.as_view()),
 ]
 
