@@ -2,6 +2,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+# import oauth2_provider.contrib.rest_framework
+# import rest_framework_social_oauth2.backends
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
@@ -44,7 +46,9 @@ INSTALLED_APPS = (
     "corsheaders",
     "elasticemailbackend",
     "social_django",
-    # "rest_framework_simplejwt",
+    "rest_framework_simplejwt",
+    "rest_framework_social_oauth2",
+    "oauth2_provider",
 
     # Приложения
     "users.apps.UsersConfig",
@@ -173,13 +177,13 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework_social_oauth2.authentication.SocialAuthentication",
     ),
 }
 
 DOMAIN = os.getenv("DOMAIN", default='')
 SITE_NAME = DOMAIN
-ACTIVATION_URL = os.getenv("ACTIVATION_URL")
-LOGIN_URL_ = os.getenv("LOGIN_URL_")
 
 # Чтобы POST/PATCH можно было без слэша в конце юзать
 # APPEND_SLASH = False
@@ -193,7 +197,8 @@ DJOSER = {
         "current_user": "users.serializers.CustomUserSerializer",
     },
     "ACTIVATION_URL": "api/account-activate/{uid}/{token}/",
-    "SEND_ACTIVATION_EMAIL": True,
+    # "TOKEN_MODEL": None, # In case if only stateless tokens (e.g. JWT) are used in project it should be set to None.
+    # "SEND_ACTIVATION_EMAIL": True,
     # Это нужно будет согласовывать с фронтом: они должны будут принять эту
     # ссылку и вывести экран для ввода нового пароля, который вместе с uid и
     # token улетит на password_reset_confirm
@@ -236,7 +241,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 SOCIAL_AUTH_JSONFIELD_CUSTOM = 'django.db.models.JSONField'
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
-# LOGIN_REDIRECT_URL = 'api/v1/' # URL для перенаправления пользователя после успешной авторизации
+
+LOGIN_REDIRECT_URL = '/api/v1/users/me/'  # для отладки
 
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.vk.VKOAuth2",
@@ -244,34 +250,42 @@ AUTHENTICATION_BACKENDS = (
     # "social_auth.backends.google.GoogleOAuth2Backend",
     # 'social_auth.backends.contrib.yandex.YandexOAuth2Backend',
     # 'social_auth.backends.contrib.odnoklassniki.OdnoklassnikiBackend',
+    # "rest_framework_social_oauth2.backends.DjangoOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 )
-#
-# SOCIAL_AUTH_PIPELINE = (
-#     'social_core.pipeline.social_auth.social_details',
-#     'social_core.pipeline.social_auth.social_uid',
-#     'social_core.pipeline.social_auth.auth_allowed',
-#     'social_core.pipeline.social_auth.social_user',
-#     'social_core.pipeline.user.get_username',
-#     'social_core.pipeline.social_auth.associate_by_email',
-#     'social_core.pipeline.user.create_user',
-#     'social_core.pipeline.social_auth.associate_user',
-#     'social_core.pipeline.social_auth.load_extra_data',
-#     'social_core.pipeline.user.user_details',
-# )
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = "51808444"
-SOCIAL_AUTH_VK_OAUTH2_SECRET = "WdzlIJ1t077PeWhg6uv1"
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_VK_OAUTH2_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_VK_OAUTH2_SECRET')
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ["email"]
 SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ["first_name", "last_name"]
 #
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '867248493151-fqifr5qf6bipctrsfful0nmhm688hirc.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 # SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 #     'https://www.googleapis.com/auth/userinfo.email',
 #     'https://www.googleapis.com/auth/userinfo.profile',
 #     'openid'
 # ]
+#
 # SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
+SOCIAL_AUTH_ALLOWED_REDIRECT_URIS = [
+    "http://mysite.com/social/login/google-oauth2/",
+    "http://mysite.com/social/complete/google-oauth2/",
+]

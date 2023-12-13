@@ -2,6 +2,7 @@ import requests
 # from django.contrib.auth import get_user_model
 # from django_filters.rest_framework import DjangoFilterBackend
 # from django.shortcuts import get_object_or_404, redirect
+# from social_core.pipeline.partial import partial
 from django.db.models import F
 from django.conf import settings
 from django.http import HttpResponseRedirect
@@ -13,7 +14,6 @@ from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-# from social_core.pipeline.partial import partial
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
 
@@ -274,9 +274,10 @@ class ActivateUserView(GenericAPIView):
     def get(self, request, uid, token, format=None):
         """Отправка POST вместо GET."""
         payload = {"uid": uid, "token": token}
+        print(payload)
         actiavtion_url = settings.ACTIVATION_URL
         response = requests.post(actiavtion_url, data=payload)
-        if response.status_code == 204:
+        if response.status_code == 200: # 204
             return HttpResponseRedirect(redirect_to=settings.LOGIN_URL_)
         return Response(response.json())
 

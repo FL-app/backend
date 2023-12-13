@@ -35,8 +35,9 @@ urlpatterns = [
     path("v1/", include(router.urls)),
     path("v1/", include("djoser.urls")),
     path("v1/", include("djoser.urls.jwt")),
-    # path("v1/", include("djoser.social.urls")),
+    path("scl/", include("djoser.social.urls")),
     # path("social/", include("social_django.urls", namespace="social")),
+    path("fre/", include("rest_framework_social_oauth2.urls")),
     path("account-activate/<uid>/<token>/", ActivateUserView.as_view()),
 ]
 
