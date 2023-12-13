@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     "django_filters",
     "drf_yasg",
     "corsheaders",
-    "elasticemailbackend",
 
     # Приложения
     "users.apps.UsersConfig",
@@ -195,7 +194,8 @@ DJOSER = {
         "user": "users.serializers.CustomUserSerializer",
         "current_user": "users.serializers.CustomUserSerializer",
     },
-    "ACTIVATION_URL": "api/account-activate/{uid}/{token}/",
+    # "ACTIVATION_URL": "api/account-activate/{uid}/{token}/",
+    "ACTIVATION_URL": "api/v1/users/activation/{uid}/{token}/",
     "SEND_ACTIVATION_EMAIL": True,
     # Это нужно будет согласовывать с фронтом: они должны будут принять эту
     # ссылку и вывести экран для ввода нового пароля, который вместе с uid и
@@ -220,16 +220,15 @@ CSRF_TRUSTED_ORIGINS = (
 )
 AUTH_USER_MODEL = "users.CustomUser"
 
-EMAIL_BACKEND = "elasticemailbackend.backend.ElasticEmailBackend"
 
-ELASTICEMAIL_API_KEY = os.getenv("ELASTICEMAIL_API_KEY")
-EMAIL_HOST_USER = os.getenv(
-    "EMAIL_HOST_USER", default="friends-locator@yandex.ru"
-)
-
-EMAIL_SERVER = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_ADMIN = EMAIL_HOST_USER
+
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
