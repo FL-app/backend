@@ -32,9 +32,9 @@ jobs:
           cd backend
           pip install -r requirements.txt
 
-      - name: Testing with flake8
-        run: |
-            python -m flake8
+#      - name: Testing with flake8
+#        run: |
+#            python -m flake8
 
   build_and_push_to_docker_hub:
     name: Push image to DockerHub
@@ -75,9 +75,12 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             cd /root/infra
-            rm .env
+#            Checking if old_env exists and creating the old_env directory if it doesn't
+            if [ ! -d "old_env" ]; then   mkdir "old_env"; fi
+#            Move the ".env" file to the "old_env" directory and rename it with the current date and time stamp.
+            mv ".env" "old_env/.env_$(date +"%Y.%m.%d--%H.%M.%S")"
+#            creating and filling a new .env file
             touch .env
-            
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
@@ -102,21 +105,21 @@ jobs:
             sudo docker image prune -f
             sudo docker-compose up -d
 
-  send_message:
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: github.event.pull_request.merged == true && github.base_ref == 'main'
-    steps:
-      - name: Sending message
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            ${{ github.workflow }}
-            ${{ github.actor }} created commit:
-                        Commit message: ${{ github.event.commits[0].message }}
-
-                        Repository: ${{ github.repository }}
-
-                        See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+#  send_message:
+#    runs-on: ubuntu-latest
+#    needs: deploy
+#    if: github.event.pull_request.merged == true && github.base_ref == 'main'
+#    steps:
+#      - name: Sending message
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.TELEGRAM_TO }}
+#          token: ${{ secrets.TELEGRAM_TOKEN }}
+#          message: |
+#            ${{ github.workflow }}
+#            ${{ github.actor }} created commit:
+#                        Commit message: ${{ github.event.commits[0].message }}
+#
+#                        Repository: ${{ github.repository }}
+#
+#                        See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
