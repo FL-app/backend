@@ -75,11 +75,11 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             cd /root/infra
-#            Checking if old_env exists and creating the old_env directory if it doesn't
+            # Checking if old_env exists and creating the old_env directory if it doesn't
             if [ ! -d "old_env" ]; then   mkdir "old_env"; fi
-#            Move the ".env" file to the "old_env" directory and rename it with the current date and time stamp.
+            # Move the ".env" file to the "old_env" directory and rename it with the current date and time stamp.
             mv ".env" "old_env/.env_$(date +"%Y.%m.%d--%H.%M.%S")"
-#            creating and filling a new .env file
+            # Creating and filling a new .env file
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
