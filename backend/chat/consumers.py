@@ -3,13 +3,15 @@ import json
 from channels.db import database_sync_to_async
 from djangochannelsrestframework import mixins
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
-from djangochannelsrestframework.observer.generics import (ObserverModelInstanceMixin, action)
+from djangochannelsrestframework.observer.generics import (
+    ObserverModelInstanceMixin, action)
 from djangochannelsrestframework.observer import model_observer
 
 from users.models import CustomUser
 from users.serializers import CustomUserSerializer
 from chat.models import Room, Message
 from chat.serializers import RoomSerializer, MessageSerializer
+
 
 class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
     queryset = Room.objects.all()
@@ -61,7 +63,11 @@ class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
 
     @message_activity.serializer
     def message_activity(self, instance: Message, action, **kwargs):
-        return dict(data=MessageSerializer(instance).data, action=action.value, pk=instance.pk)
+        return dict(
+            data=MessageSerializer(instance).data,
+            action=action.value,
+            pk=instance.pk,
+        )
 
     async def notify_users(self):
         room: Room = await self.get_room(self.room_subscribe)
@@ -83,7 +89,8 @@ class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
 
     @database_sync_to_async
     def current_users(self, room: Room):
-        return [CustomUserSerializer(user).data for user in room.current_users.all()]
+        return [CustomUserSerializer(user).data
+                for user in room.current_users.all()]
 
     @database_sync_to_async
     def remove_user_from_room(self, room):
@@ -95,6 +102,7 @@ class RoomConsumer(ObserverModelInstanceMixin, GenericAsyncAPIConsumer):
         user: CustomUser = self.scope["user"]
         if not user.current_rooms.filter(pk=self.room_subscribe).exists():
             user.current_rooms.add(Room.objects.get(pk=pk))
+
 
 class UserConsumer(
         mixins.ListModelMixin,
