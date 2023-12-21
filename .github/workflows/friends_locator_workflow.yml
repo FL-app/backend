@@ -49,13 +49,13 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD  }}
 
       - name: Push to DockerHub
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:backend"
           push: True
@@ -74,13 +74,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/friends-locator-backend:latest
-            cd ../home/
-            sudo docker-compose stop
-            sudo docker-compose rm -f backend
-            sudo docker image prune -f
+            cd /root/infra
             rm .env
             touch .env
+            
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
@@ -98,6 +95,11 @@ jobs:
             echo EVERYONE=${{ secrets.EVERYONE }} >> .env
             echo ACTIVATION_URL=${{ secrets.ACTIVATION_URL }} >> .env
             echo LOGIN_URL_=${{ secrets.LOGIN_URL_ }} >> .env
+            
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/friends-locator-backend:latest
+            sudo docker-compose stop
+            sudo docker-compose rm -f backend
+            sudo docker image prune -f
             sudo docker-compose up -d
 
   send_message:
