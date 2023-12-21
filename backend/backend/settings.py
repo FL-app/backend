@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     "drf_yasg",
     "corsheaders",
     "elasticemailbackend",
+    "drf_spectacular",
 
     # Приложения
     "users.apps.UsersConfig",
@@ -103,28 +104,28 @@ CHANNEL_LAYERS = {
     }
 }
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#         "ATOMIC_REQUESTS": True,
-#     }
-# }
-
-# Postgress
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv(
-            "DB_ENGINE", default="django.db.backends.postgresql"
-        ),
-        "NAME": os.getenv("DB_NAME", default="postgres"),
-        "USER": os.getenv("POSTGRES_USER", default="postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="adm"),
-        "HOST": os.getenv("DB_HOST", default="db"),
-        "PORT": os.getenv("DB_PORT", default="5432"),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
         "ATOMIC_REQUESTS": True,
     }
 }
+
+# Postgress
+# DATABASES = {
+#     "default": {
+#         "ENGINE": os.getenv(
+#             "DB_ENGINE", default="django.db.backends.postgresql"
+#         ),
+#         "NAME": os.getenv("DB_NAME", default="postgres"),
+#         "USER": os.getenv("POSTGRES_USER", default="postgres"),
+#         "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="adm"),
+#         "HOST": os.getenv("DB_HOST", default="db"),
+#         "PORT": os.getenv("DB_PORT", default="5432"),
+#         "ATOMIC_REQUESTS": True,
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = (
     {
@@ -177,6 +178,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 DOMAIN = os.getenv("DOMAIN")
@@ -196,7 +198,7 @@ DJOSER = {
         "current_user": "users.serializers.CustomUserSerializer",
     },
     "ACTIVATION_URL": "api/account-activate/{uid}/{token}/",
-    "SEND_ACTIVATION_EMAIL": True,
+    # "SEND_ACTIVATION_EMAIL": True,
     # Это нужно будет согласовывать с фронтом: они должны будут принять эту
     # ссылку и вывести экран для ввода нового пароля, который вместе с uid и
     # token улетит на password_reset_confirm
@@ -235,3 +237,12 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DJANGO_CHANNELS_REST_API = {}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': '"Where are my friends?" API',
+    'DESCRIPTION': 'Specification for the backend project application '
+                   '"Where are my friends?"',
+    'VERSION': 'v1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}

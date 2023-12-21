@@ -38,7 +38,7 @@ urlpatterns = [
     path("v1/", include(router.urls)),
     path("v1/", include("djoser.urls")),
     path("v1/", include("djoser.urls.jwt")),
-    path("account-activate/<uid>/<token>/", ActivateUserView.as_view()),
+    # path("account-activate/<uid>/<token>/", ActivateUserView.as_view()),
     re_path(r"ws/chat/(?P<room_name>\w+)/$", consumers.RoomConsumer.as_asgi()),
 ]
 

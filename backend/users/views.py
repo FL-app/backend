@@ -12,6 +12,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
+from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 
 from .models import CustomUser as User
 from .models import FriendsRelationship, FriendsRequest
@@ -31,6 +33,7 @@ class CustomUserViewSet(UserViewSet):
     search_fields = ("^email", "^username", "^first_name", "^last_name")
 
     @action(detail=False)
+    # @swagger_auto_schema(query_serializer=FriendSerializer())
     def friends(self, request):
         query_param = self.request.GET.get('friends_category')
         if query_param:
@@ -46,12 +49,20 @@ class CustomUserViewSet(UserViewSet):
         )
         return Response(serializer.data, status=HTTP_200_OK)
 
+    @extend_schema(
+        # summary='',
+        # description='',
+        # request=FriendSerializer,
+        # responses=FriendSerializer,
+        # tags=[''],
+    )
     @action(
         methods=["post"],
         detail=True,
         permission_classes=(IsAuthenticated,),
         url_path="add-friend",
     )
+    @swagger_auto_schema(request_body=FriendSerializer)
     def add_friend(self, request, **kwargs):
         from_user = request.user
         to_user = get_object_or_404(User, id=self.kwargs.get("id"))
@@ -221,12 +232,17 @@ class CustomUserViewSet(UserViewSet):
         serializer.save()
         return Response(data=serializer.data, status=HTTP_201_CREATED)
 
+    @extend_schema(
+        request=UserpicSerializer,
+        responses=UserpicSerializer,
+    )
     @action(
         methods=["patch"],
         detail=True,
         permission_classes=(IsAuthenticated,),
         url_path="update-user-pic",
     )
+    @swagger_auto_schema(request_body=UserpicSerializer)
     def update_user_pic(self, request, **kwargs):
         user = request.user
         serializer = UserpicSerializer(
@@ -263,15 +279,16 @@ class CustomUserViewSet(UserViewSet):
 
 
 class ActivateUserView(GenericAPIView):
-    """Подтверждение мейла."""
-
-    permission_classes = [AllowAny]
-
-    def get(self, request, uid, token, format=None):
-        """Отправка POST вместо GET."""
-        payload = {"uid": uid, "token": token}
-        actiavtion_url = settings.ACTIVATION_URL
-        response = requests.post(actiavtion_url, data=payload)
-        if response.status_code == 204:
-            return HttpResponseRedirect(redirect_to=settings.LOGIN_URL_)
-        return Response(response.json())
+    pass
+    # """Подтверждение мейла."""
+    #
+    # permission_classes = [AllowAny]
+    #
+    # def get(self, request, uid, token, format=None):
+    #     """Отправка POST вместо GET."""
+    #     payload = {"uid": uid, "token": token}
+    #     actiavtion_url = settings.ACTIVATION_URL
+    #     response = requests.post(actiavtion_url, data=payload)
+    #     if response.status_code == 204:
+    #         return HttpResponseRedirect(redirect_to=settings.LOGIN_URL_)
+    #     return Response(response.json())

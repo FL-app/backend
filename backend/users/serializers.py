@@ -13,7 +13,7 @@ from .models import FriendsRelationship
 
 
 class Base64ImageField(ImageField):
-    """Класс для добавления добавления аватара при создании пользователя."""
+    """Класс для добавления аватара при создании пользователя."""
 
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith("data:image"):
