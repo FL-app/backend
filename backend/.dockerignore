@@ -1,0 +1,10 @@
+Dockerfile
+.dockerignore
+.env
+.git
+.gitignore
+makefile
+venv/
+.vscode
+.sqlite3
+build/
