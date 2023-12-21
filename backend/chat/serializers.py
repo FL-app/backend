@@ -1,7 +1,8 @@
-from .models import Room, Message
-from users.serializers import CustomUserSerializer
-
 from rest_framework import serializers
+
+from .models import Room, Message
+
+from users.serializers import CustomUserSerializer
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -23,9 +24,11 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ["pk", "name", "host", "messages", "current_users", "last_message"]
+        fields = ["pk", "name", "host", "messages",
+                  "current_users", "last_message"]
         depth = 1
         read_only_fields = ["messages", "last_message"]
 
     def get_last_message(self, obj: Room):
-        return MessageSerializer(obj.messages.order_by('created_at').last()).data
+        return MessageSerializer(obj.messages.
+                                 order_by('created_at').last()).data

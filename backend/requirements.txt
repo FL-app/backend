@@ -12,3 +12,5 @@ gunicorn==20.0.4
 drf-yasg==1.21.6
 django-cors-headers==4.2.0
 -e git+https://github.com/muepsilon/elasticemail-django@1dad468041bf0e4e9bf9ac8260fcbf95c8c58a22#egg=elasticemail_django
+djangochannelsrestframework
+channels
