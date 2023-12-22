@@ -148,6 +148,9 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ("username",)
 
+    is_active = models.BooleanField(default=False)
+    delete_time = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         verbose_name = _("Пользователь")
         verbose_name_plural = _("Пользователи")
