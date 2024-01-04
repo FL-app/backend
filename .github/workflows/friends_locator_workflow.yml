@@ -104,7 +104,6 @@ jobs:
             echo EMAIL_PORT=${{ secrets.EMAIL_PORT }} >> .env
             echo # Other settings >> .env
             echo ACTIVATION_URL=${{ secrets.ACTIVATION_URL }} >> .env
-            echo LOGIN_URL_=${{ secrets.LOGIN_URL_ }} >> .env
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/friends-locator-backend:latest
             sudo docker-compose stop
