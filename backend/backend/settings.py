@@ -184,8 +184,6 @@ REST_FRAMEWORK = {
 }
 
 SITE_NAME = DOMAIN
-ACTIVATION_URL = os.getenv("ACTIVATION_URL")
-LOGIN_URL_ = os.getenv("LOGIN_URL_")
 
 # Чтобы POST/PATCH можно было без слэша в конце юзать
 # APPEND_SLASH = False
@@ -198,8 +196,9 @@ DJOSER = {
         "user": "users.serializers.CustomUserSerializer",
         "current_user": "users.serializers.CustomUserSerializer",
     },
-    # "ACTIVATION_URL": "api/account-activate/{uid}/{token}/",
-    "ACTIVATION_URL": "api/v1/users/activation/{uid}/{token}/",
+    "ACTIVATION_URL": os.getenv("ACTIVATION_URL",
+                                default="#/activate/{uid}/{token}/"),
+    # ACTIVATION_URL задается фронтом
     "SEND_ACTIVATION_EMAIL": True,
     # Это нужно будет согласовывать с фронтом: они должны будут принять эту
     # ссылку и вывести экран для ввода нового пароля, который вместе с uid и
@@ -228,6 +227,9 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# For debugging, you can use this setting to send messages to the console:
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT")
 EMAIL_USE_TLS = True

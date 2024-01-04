@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
 from api.views import TagViewSet
-from users.views import ActivateUserView, CustomUserViewSet
+from users.views import CustomUserViewSet
 from places.views import PlacesViewSet
 from chat.views import RoomViewSet, MessageViewSet
 from chat import consumers
@@ -38,7 +38,6 @@ urlpatterns = [
     path("v1/", include(router.urls)),
     path("v1/", include("djoser.urls")),
     path("v1/", include("djoser.urls.jwt")),
-    path("account-activate/<uid>/<token>/", ActivateUserView.as_view()),
     re_path(r"ws/chat/(?P<room_name>\w+)/$", consumers.RoomConsumer.as_asgi()),
 ]
 
