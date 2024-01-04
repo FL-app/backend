@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     "django_filters",
     "drf_yasg",
     "corsheaders",
-    "elasticemailbackend",
     "drf_spectacular",
 
     # Приложения
@@ -63,11 +62,16 @@ MIDDLEWARE = (
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
+DOMAIN = os.getenv("DOMAIN")
+
 # Убрать в проде
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://91.186.197.174",
+    "http://" + DOMAIN,
+    "https://" + DOMAIN,
     "null",
 )
 
@@ -181,10 +185,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-DOMAIN = os.getenv("DOMAIN")
 SITE_NAME = DOMAIN
-ACTIVATION_URL = os.getenv("ACTIVATION_URL")
-LOGIN_URL_ = os.getenv("LOGIN_URL_")
 
 # Чтобы POST/PATCH можно было без слэша в конце юзать
 # APPEND_SLASH = False
@@ -197,8 +198,11 @@ DJOSER = {
         "user": "users.serializers.CustomUserSerializer",
         "current_user": "users.serializers.CustomUserSerializer",
     },
-    "ACTIVATION_URL": "api/account-activate/{uid}/{token}/",
-    # "SEND_ACTIVATION_EMAIL": True,
+    "ACTIVATION_URL": os.getenv("ACTIVATION_URL",
+                                default="#/activate/{uid}/{token}/"),
+    # ACTIVATION_URL задается фронтом
+    "SEND_ACTIVATION_EMAIL": True,
+
     # Это нужно будет согласовывать с фронтом: они должны будут принять эту
     # ссылку и вывести экран для ввода нового пароля, который вместе с uid и
     # token улетит на password_reset_confirm
@@ -219,19 +223,23 @@ INTERNAL_IPS = (
 CSRF_TRUSTED_ORIGINS = (
     "http://" + DOMAIN,
     "https://" + DOMAIN,
+    "http://127.0.0.1",
+    "http://91.186.197.174",
 )
 AUTH_USER_MODEL = "users.CustomUser"
 
-EMAIL_BACKEND = "elasticemailbackend.backend.ElasticEmailBackend"
 
-ELASTICEMAIL_API_KEY = os.getenv("ELASTICEMAIL_API_KEY")
-EMAIL_HOST_USER = os.getenv(
-    "EMAIL_HOST_USER", default="friends-locator@yandex.ru"
-)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# For debugging, you can use this setting to send messages to the console:
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-EMAIL_SERVER = EMAIL_HOST_USER
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_ADMIN = EMAIL_HOST_USER
+
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

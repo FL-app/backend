@@ -1,14 +1,10 @@
-import requests
 from django.db.models import F
-from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
@@ -276,19 +272,3 @@ class CustomUserViewSet(UserViewSet):
             )
         serializer.save()
         return Response(data=serializer.data, status=HTTP_201_CREATED)
-
-
-class ActivateUserView(GenericAPIView):
-    pass
-    # """Подтверждение мейла."""
-    #
-    # permission_classes = [AllowAny]
-    #
-    # def get(self, request, uid, token, format=None):
-    #     """Отправка POST вместо GET."""
-    #     payload = {"uid": uid, "token": token}
-    #     actiavtion_url = settings.ACTIVATION_URL
-    #     response = requests.post(actiavtion_url, data=payload)
-    #     if response.status_code == 204:
-    #         return HttpResponseRedirect(redirect_to=settings.LOGIN_URL_)
-    #     return Response(response.json())
