@@ -9,7 +9,8 @@ python-dotenv==0.21.1
 django-colorfield==0.9.0
 psycopg2-binary==2.9.6
 gunicorn==20.0.4
-drf-yasg==1.21.6
+drf-yasg==1.21.6 # delete when switch on openapi 3
+coreapi # delete when switch on openapi 3
 django-cors-headers==4.2.0
 djangochannelsrestframework==1.2.0
 channels==4.0.0
