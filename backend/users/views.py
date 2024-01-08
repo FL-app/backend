@@ -8,8 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
-from drf_yasg.utils import swagger_auto_schema
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from .models import CustomUser as User
 from .models import FriendsRelationship, FriendsRequest
@@ -28,8 +27,24 @@ class CustomUserViewSet(UserViewSet):
     filterset_fields = ("tags",)
     search_fields = ("^email", "^username", "^first_name", "^last_name")
 
+    @extend_schema(
+        summary='Список друзей',
+        description=' ',
+        responses=FriendSerializer,
+        tags=['friends'],
+        parameters=[
+            OpenApiParameter(
+                name='friends_category',
+                location=OpenApiParameter.QUERY,
+                description='Укажите категорию друзей',
+                enum=['none_category', 'friends', 'family'],
+                default='none_category',
+                required=False,
+                type=str,
+            )
+        ],
+    )
     @action(detail=False)
-    # @swagger_auto_schema(query_serializer=FriendSerializer())
     def friends(self, request):
         query_param = self.request.GET.get('friends_category')
         if query_param:
@@ -46,11 +61,20 @@ class CustomUserViewSet(UserViewSet):
         return Response(serializer.data, status=HTTP_200_OK)
 
     @extend_schema(
-        # summary='',
-        # description='',
+        summary='Добавление друга',
+        description=' ',
         # request=FriendSerializer,
-        # responses=FriendSerializer,
-        # tags=[''],
+        responses=FriendSerializer,
+        tags=['friends'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='Укажите id друга',
+                required=True,
+                type=int,
+            )
+        ],
     )
     @action(
         methods=["post"],
@@ -58,7 +82,6 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,),
         url_path="add-friend",
     )
-    @swagger_auto_schema(request_body=FriendSerializer)
     def add_friend(self, request, **kwargs):
         from_user = request.user
         to_user = get_object_or_404(User, id=self.kwargs.get("id"))
@@ -78,6 +101,22 @@ class CustomUserViewSet(UserViewSet):
             FriendsRequest.objects.create(from_user=from_user, to_user=to_user)
         return Response(serializer.data, status=HTTP_201_CREATED)
 
+    @extend_schema(
+        summary='Подтверждение заявки в друзья',
+        description=' ',
+        # request=FriendSerializer,
+        responses=FriendSerializer,
+        tags=['friends'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='Укажите id друга',
+                required=True,
+                type=int,
+            )
+        ],
+    )
     @action(
         methods=["post"],
         detail=True,
@@ -104,6 +143,22 @@ class CustomUserViewSet(UserViewSet):
         from_user.friends.add(to_user)
         return Response(serializer.data, status=HTTP_201_CREATED)
 
+    @extend_schema(
+        summary='Удаление друга',
+        description=' ',
+        # request=FriendSerializer,
+        # responses=FriendSerializer,
+        tags=['friends'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='Укажите id друга',
+                required=True,
+                type=int,
+            )
+        ],
+    )
     @action(
         methods=["delete"],
         detail=True,
@@ -123,6 +178,22 @@ class CustomUserViewSet(UserViewSet):
         current_user.friends.remove(friend)
         return Response(status=HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        summary='Отклонение заявки в друзья',
+        description=' ',
+        # request=FriendSerializer,
+        # responses=FriendSerializer,
+        tags=['friends'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='Укажите id друга',
+                required=True,
+                type=int,
+            )
+        ],
+    )
     @action(
         methods=["delete"],
         detail=True,
@@ -144,6 +215,13 @@ class CustomUserViewSet(UserViewSet):
         ).delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        summary='Список заявок в друзья',
+        description=' ',
+        # request=FriendSerializer,
+        responses=FriendSerializer,
+        tags=['friends'],
+    )
     @action(
         methods=["get"],
         detail=False,
@@ -157,6 +235,22 @@ class CustomUserViewSet(UserViewSet):
         )
         return Response(serializer.data, status=HTTP_200_OK)
 
+    @extend_schema(
+        summary='Обновление координат',
+        description=' ',
+        request=CoordinateSerializer,
+        responses=CoordinateSerializer,
+        tags=['map'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='Укажите id пользователя?',
+                required=True,
+                type=int,
+            )
+        ],
+    )
     @action(
         methods=["patch"],
         detail=True,
@@ -178,6 +272,13 @@ class CustomUserViewSet(UserViewSet):
         serializer.save()
         return Response(data=serializer.data, status=HTTP_201_CREATED)
 
+    @extend_schema(
+        summary='Поиск друзей?',
+        description=' ',
+        # request=FriendSerializer,
+        responses=FriendSerializer,
+        tags=['friends'],
+    )
     @action(
         methods=["get"],
         detail=False,
@@ -202,6 +303,22 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=HTTP_204_NO_CONTENT)
         return Response(serializer.data, status=HTTP_200_OK)
 
+    @extend_schema(
+        summary='Изменение категории друга?',
+        description=' ',
+        # request=FriendSerializer,
+        responses=FriendsRelationshipSerializer,
+        tags=['friends'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='Укажите id друга',
+                required=True,
+                type=int,
+            )
+        ],
+    )
     @action(
         methods=["patch"],
         detail=True,
@@ -229,8 +346,11 @@ class CustomUserViewSet(UserViewSet):
         return Response(data=serializer.data, status=HTTP_201_CREATED)
 
     @extend_schema(
+        summary='Изменение аватара пользователя',
+        description=' ',
         request=UserpicSerializer,
         responses=UserpicSerializer,
+        tags=['user'],
     )
     @action(
         methods=["patch"],
@@ -238,7 +358,6 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,),
         url_path="update-user-pic",
     )
-    @swagger_auto_schema(request_body=UserpicSerializer)
     def update_user_pic(self, request, **kwargs):
         user = request.user
         serializer = UserpicSerializer(
@@ -254,6 +373,13 @@ class CustomUserViewSet(UserViewSet):
         serializer.save()
         return Response(data=serializer.data, status=HTTP_201_CREATED)
 
+    @extend_schema(
+        summary='Обновление статуса пользователя?',
+        description=' ',
+        request=UserStatusSerializer,
+        responses=UserStatusSerializer,
+        tags=['user'],
+    )
     @action(
         methods=["patch"],
         detail=True,
