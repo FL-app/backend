@@ -17,6 +17,9 @@ from .serializers import (CoordinateSerializer, CustomUserSerializer,
                           UserpicSerializer, UserStatusSerializer)
 
 
+@extend_schema(
+    tags=['user'],
+)
 class CustomUserViewSet(UserViewSet):
     """Кастомный вьюсет для работы с пользователем."""
 
@@ -240,7 +243,7 @@ class CustomUserViewSet(UserViewSet):
         description=' ',
         request=CoordinateSerializer,
         responses=CoordinateSerializer,
-        tags=['map'],
+        tags=['user'],
         parameters=[
             OpenApiParameter(
                 name='id',

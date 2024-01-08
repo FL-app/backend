@@ -8,6 +8,9 @@ from .permissions import IsAuthor
 from .serializers import PlacesSerializer, SharingSerializer
 
 
+@extend_schema(
+    tags=['places'],
+)
 class PlacesViewSet(viewsets.ModelViewSet):
     """CRUD для пользовательских мест."""
 
@@ -21,7 +24,6 @@ class PlacesViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary='Поделиться локацией',
         description=' ',
-        tags=['places'],
         parameters=[
             OpenApiParameter(
                 name='id',
@@ -64,9 +66,6 @@ class PlacesViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary='Перестать делиться локацией',
         description=' ',
-        # request=FriendSerializer,
-        # responses=FriendSerializer,
-        tags=['places'],
         parameters=[
             OpenApiParameter(
                 name='id',
@@ -111,9 +110,6 @@ class PlacesViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary='Все расшаренные локации',
         description=' ',
-        # request=FriendSerializer,
-        # responses=FriendSerializer,
-        tags=['places'],
         parameters=[
             OpenApiParameter(
                 name='user_id',
