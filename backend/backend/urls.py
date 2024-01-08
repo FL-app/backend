@@ -14,8 +14,16 @@ urlpatterns += [
     # YOUR PATTERNS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
-    path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path(
+        'api/swagger/',
+        SpectacularSwaggerView.as_view(url_name='schema'),
+        name='swagger',
+    ),
+    path(
+        'api/redoc/',
+        SpectacularRedocView.as_view(url_name='schema'),
+        name='redoc',
+    ),
 ]
 
 if settings.DEBUG:
