@@ -1,6 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from .models import Place, SharedPlaces
 from .permissions import IsAuthor
@@ -17,6 +18,27 @@ class PlacesViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @extend_schema(
+        summary='Поделиться локацией',
+        description=' ',
+        tags=['places'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='id локации',
+                required=True,
+                type=int,
+            ),
+            OpenApiParameter(
+                name='user_id',
+                location=OpenApiParameter.PATH,
+                description='id пользователя, которому отправляем локацию',
+                required=True,
+                type=str,
+            )
+        ],
+    )
     @action(
         methods=["post"],
         detail=True,
@@ -39,6 +61,29 @@ class PlacesViewSet(viewsets.ModelViewSet):
         serializer.save(sharing_user=self.request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        summary='Перестать делиться локацией',
+        description=' ',
+        # request=FriendSerializer,
+        # responses=FriendSerializer,
+        tags=['places'],
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                location=OpenApiParameter.PATH,
+                description='id локации',
+                required=True,
+                type=int,
+            ),
+            OpenApiParameter(
+                name='user_id',
+                location=OpenApiParameter.PATH,
+                description='id пользователя, которому отправляем локацию',
+                required=True,
+                type=str,
+            )
+        ],
+    )
     @action(
         methods=["delete"],
         detail=True,
@@ -63,6 +108,22 @@ class PlacesViewSet(viewsets.ModelViewSet):
         place.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        summary='Все расшаренные локации',
+        description=' ',
+        # request=FriendSerializer,
+        # responses=FriendSerializer,
+        tags=['places'],
+        parameters=[
+            OpenApiParameter(
+                name='user_id',
+                location=OpenApiParameter.PATH,
+                description='id пользователя, которому отправляем локацию',
+                required=True,
+                type=str,
+            )
+        ],
+    )
     @action(
         methods=["get"],
         detail=False,
