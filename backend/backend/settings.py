@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
+    "rest_framework_simplejwt",
     "colorfield",
     "django_filters",
     "drf_yasg",
@@ -108,28 +109,28 @@ CHANNEL_LAYERS = {
     }
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-        "ATOMIC_REQUESTS": True,
-    }
-}
-
-# Postgress
 # DATABASES = {
 #     "default": {
-#         "ENGINE": os.getenv(
-#             "DB_ENGINE", default="django.db.backends.postgresql"
-#         ),
-#         "NAME": os.getenv("DB_NAME", default="postgres"),
-#         "USER": os.getenv("POSTGRES_USER", default="postgres"),
-#         "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="adm"),
-#         "HOST": os.getenv("DB_HOST", default="db"),
-#         "PORT": os.getenv("DB_PORT", default="5432"),
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #         "ATOMIC_REQUESTS": True,
 #     }
 # }
+
+# Postgress
+DATABASES = {
+    "default": {
+        "ENGINE": os.getenv(
+            "DB_ENGINE", default="django.db.backends.postgresql"
+        ),
+        "NAME": os.getenv("DB_NAME", default="postgres"),
+        "USER": os.getenv("POSTGRES_USER", default="postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="adm"),
+        "HOST": os.getenv("DB_HOST", default="db"),
+        "PORT": os.getenv("DB_PORT", default="5432"),
+        "ATOMIC_REQUESTS": True,
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = (
     {
@@ -253,4 +254,8 @@ SPECTACULAR_SETTINGS = {
                    '"Where are my friends?"',
     'VERSION': 'v1',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        "filter": True,  # включить поиск по тегам
+    },
+    # 'COMPONENT_SPLIT_REQUEST': True
 }
