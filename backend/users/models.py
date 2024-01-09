@@ -159,6 +159,8 @@ class CustomUser(AbstractUser):
 class FriendsRelationship(models.Model):
     """Промежуточная/вспомогательная таблица юзер-друзья."""
 
+    objects = models.Manager()
+
     NONE_CATEGORY = "none_category"
     FRIENDS = "friends"
     FAMILY = "family"
@@ -203,6 +205,8 @@ class FriendsRelationship(models.Model):
 
 class FriendsRequest(models.Model):
     """Таблица запросов в друзья."""
+
+    objects = models.Manager()
 
     from_user = models.ForeignKey(
         CustomUser,
